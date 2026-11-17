@@ -1,0 +1,14 @@
+C:\Study_Dev\KTY\Sharp\Test\Test\bin\Debug\net9.0\Test.exe
+C:\Study_Dev\KTY\Sharp\Test\Test\bin\Debug\net9.0\Test.deps.json
+C:\Study_Dev\KTY\Sharp\Test\Test\bin\Debug\net9.0\Test.runtimeconfig.json
+C:\Study_Dev\KTY\Sharp\Test\Test\bin\Debug\net9.0\Test.dll
+C:\Study_Dev\KTY\Sharp\Test\Test\bin\Debug\net9.0\Test.pdb
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.GeneratedMSBuildEditorConfig.editorconfig
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.AssemblyInfoInputs.cache
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.AssemblyInfo.cs
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.csproj.CoreCompileInputs.cache
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.dll
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\refint\Test.dll
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.pdb
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\Test.genruntimeconfig.cache
+C:\Study_Dev\KTY\Sharp\Test\Test\obj\Debug\net9.0\ref\Test.dll
