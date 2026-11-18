@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "todo/1.0.0": {
+      "Todo/1.0.0": {
         "runtime": {
-          "todo.dll": {}
+          "Todo.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "todo/1.0.0": {
+    "Todo/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

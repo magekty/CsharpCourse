@@ -15,9 +15,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj",
-      "projectName": "todo",
-      "projectPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj",
+      "projectUniqueName": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\Todo.csproj",
+      "projectName": "Todo",
+      "projectPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\Todo.csproj",
       "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
       "outputPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\obj\\",
       "projectStyle": "PackageReference",
