@@ -1,0 +1,15 @@
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.GeneratedMSBuildEditorConfig.editorconfig
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.AssemblyInfoInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.AssemblyInfo.cs
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.csproj.CoreCompileInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.sourcelink.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\bin\Debug\net9.0\todo.exe
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\bin\Debug\net9.0\todo.deps.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\bin\Debug\net9.0\todo.runtimeconfig.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\bin\Debug\net9.0\todo.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\bin\Debug\net9.0\todo.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\refint\todo.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\todo.genruntimeconfig.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\todo\obj\Debug\net9.0\ref\todo.dll
