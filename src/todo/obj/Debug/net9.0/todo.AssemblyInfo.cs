@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("todo")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Todo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+68151793a372e84619c41f67050c9c411ae5b23f")]
-[assembly: System.Reflection.AssemblyProductAttribute("todo")]
-[assembly: System.Reflection.AssemblyTitleAttribute("todo")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4542a440b39b0842706b792331253fb75d126e5b")]
+[assembly: System.Reflection.AssemblyProductAttribute("Todo")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Todo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // MSBuild WriteCodeFragment 클래스에서 생성되었습니다.

@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj": {}
+    "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\Todo\\Todo.csproj": {}
   },
   "projects": {
-    "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj": {
+    "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\Todo\\Todo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj",
-        "projectName": "todo",
-        "projectPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\todo.csproj",
+        "projectUniqueName": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\Todo\\Todo.csproj",
+        "projectName": "Todo",
+        "projectPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\Todo\\Todo.csproj",
         "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
         "outputPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\todo\\obj\\",
         "projectStyle": "PackageReference",
@@ -32,7 +32,6 @@
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -47,11 +46,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -69,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
