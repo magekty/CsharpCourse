@@ -1,0 +1,15 @@
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\bin\Debug\net9.0\note.exe
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\bin\Debug\net9.0\note.deps.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\bin\Debug\net9.0\note.runtimeconfig.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\bin\Debug\net9.0\note.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\bin\Debug\net9.0\note.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.GeneratedMSBuildEditorConfig.editorconfig
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.AssemblyInfoInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.AssemblyInfo.cs
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.csproj.CoreCompileInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.sourcelink.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\refint\note.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\note.genruntimeconfig.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\note\obj\Debug\net9.0\ref\note.dll

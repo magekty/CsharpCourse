@@ -1,0 +1,15 @@
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\bin\Debug\net9.0\ItJustMining.exe
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\bin\Debug\net9.0\ItJustMining.deps.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\bin\Debug\net9.0\ItJustMining.runtimeconfig.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\bin\Debug\net9.0\ItJustMining.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\bin\Debug\net9.0\ItJustMining.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.GeneratedMSBuildEditorConfig.editorconfig
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.AssemblyInfoInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.AssemblyInfo.cs
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.csproj.CoreCompileInputs.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.sourcelink.json
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\refint\ItJustMining.dll
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.pdb
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ItJustMining.genruntimeconfig.cache
+C:\StudyUnity2026\KTY\CsharpCourse\src\ItJustMining\obj\Debug\net9.0\ref\ItJustMining.dll
