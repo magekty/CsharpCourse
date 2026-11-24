@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\note\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{48CC92C0-14F6-415F-961C-D189F24662FA}|note.csproj|c:\\studyunity2026\\kty\\csharpcourse\\src\\note\\\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{48CC92C0-14F6-415F-961C-D189F24662FA}|note.csproj|solutionrelative:\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{48CC92C0-14F6-415F-961C-D189F24662FA}|note.csproj|c:\\studyunity2026\\kty\\csharpcourse\\src\\note\\spaceinvader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48CC92C0-14F6-415F-961C-D189F24662FA}|note.csproj|solutionrelative:spaceinvader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,14 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs",
-              "DocumentMoniker": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\note\\\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs",
-              "RelativeDocumentMoniker": "\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs",
-              "ToolTip": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\note\\\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs",
-              "RelativeToolTip": "\uB370\uC774\uD130\uD750\uB984\uC81C\uC5B4.cs",
-              "ViewState": "AgIAAE8AAAAAAAAAAADwv2AAAAAJAAAAAAAAAA==",
+              "Title": "SpaceInvader.cs",
+              "DocumentMoniker": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\note\\SpaceInvader.cs",
+              "RelativeDocumentMoniker": "SpaceInvader.cs",
+              "ToolTip": "C:\\StudyUnity2026\\KTY\\CsharpCourse\\src\\note\\SpaceInvader.cs",
+              "RelativeToolTip": "SpaceInvader.cs",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAUwLwAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-20T07:11:37.02Z",
+              "WhenOpened": "2026-11-24T09:22:06.037Z",
               "EditorCaption": ""
             }
           ]
