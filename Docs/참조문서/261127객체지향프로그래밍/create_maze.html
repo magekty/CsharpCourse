@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recursive Backtracker 미로 학습 시뮬레이터</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-2: #162032;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --accent: #38bdf8;
+      --carve: #22c55e;
+      --backtrack: #f59e0b;
+      --head: #ef4444;
+      --wall: #0f172a;
+      --visited: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    header p {
+      margin: 2px 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .badge-phase {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: #0ea5e922;
+      color: var(--accent);
+      border: 1px solid #38bdf855;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.25fr) minmax(320px, 1fr);
+      gap: 18px;
+      padding: 20px 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    button {
+      background: #334155;
+      color: var(--text);
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    button:hover { background: #475569; }
+    button.primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+    }
+    button.primary:hover { background: #0369a1; }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--panel-2);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    input[type="range"] {
+      width: 90px;
+      accent-color: var(--accent);
+    }
+
+    .canvas-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 420px;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .metric .label {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .metric .value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      background: #0f172a;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .step-box {
+      background: var(--panel-2);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.86rem;
+      margin-bottom: 14px;
+    }
+
+    .stack-view {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 105px;
+      overflow-y: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .pros-cons { grid-template-columns: 1fr; }
+    }
+
+    .box-pro, .box-con {
+      background: var(--panel-2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+
+    .box-pro h3 { margin: 0 0 6px; font-size: 0.9rem; color: #4ade80; }
+    .box-con h3 { margin: 0 0 6px; font-size: 0.9rem; color: #fbbf24; }
+    .box-pro ul, .box-con ul { margin: 0; padding-left: 16px; }
+    .box-pro li, .box-con li { margin-bottom: 4px; }
+
+    .impact-note {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      font-size: 0.83rem;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Recursive Backtracker 미로 학습 시뮬레이터</h1>
+      <p>전진(Carve)과 역추적(Backtrack) 스택 변화를 실시간으로 관찰하며 미로 구조적 영향을 학습합니다.</p>
+    </div>
+    <div id="phaseBadge" class="badge-phase">대기 중</div>
+  </header>
+
+  <div class="layout">
+    <section class="card">
+      <h2>
+        <span>미로 생성 캔버스</span>
+        <span id="gridInfo" style="font-size:0.8rem; color:var(--muted);">15 × 15 셀</span>
+      </h2>
+
+      <div class="controls">
+        <button id="btnPlay" class="primary">자동 재생</button>
+        <button id="btnStep">1단계 실행</button>
+        <button id="btnInstant">즉시 완성</button>
+        <button id="btnReset">초기화</button>
+
+        <div class="control-group">
+          <label for="sizeRange">크기</label>
+          <input id="sizeRange" type="range" min="7" max="31" step="2" value="15" />
+          <span id="sizeVal">15</span>
+        </div>
+
+        <div class="control-group">
+          <label for="speedRange">속도</label>
+          <input id="speedRange" type="range" min="1" max="100" value="45" />
+          <span id="speedVal">45</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="mazeCanvas" width="540" height="540"></canvas>
+      </div>
+
+      <div class="legend">
+        <span><i class="dot" style="background:#ef4444;"></i>현재 위치(Top)</span>
+        <span><i class="dot" style="background:#38bdf8;"></i>활성 스택 경로</span>
+        <span><i class="dot" style="background:#e2e8f0;"></i>방문 완료 통로</span>
+        <span><i class="dot" style="background:#1e293b; border:1px solid #64748b;"></i>미방문 셀</span>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>실시간 알고리즘 상태 및 영향 분석</h2>
+
+      <div id="stepExplanation" class="step-box">
+        <strong>[시작 준비]</strong> [1단계 실행] 또는 [자동 재생]을 눌러 시작 셀에서 미로 파기를 시작하세요.
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="label">진행률 (방문 셀 / 전체)</div>
+          <div id="mVisited" class="value">0 / 225 (0%)</div>
+          <div class="bar-track"><div id="mProgressBar" class="bar-fill"></div></div>
+        </div>
+        <div class="metric">
+          <div class="label">현재 스택 깊이 / 최대 깊이</div>
+          <div id="mStack" class="value">0 / 최대 0</div>
+        </div>
+        <div class="metric">
+          <div class="label">역추적(Backtrack) 횟수</div>
+          <div id="mBacktracks" class="value">0회</div>
+        </div>
+        <div class="metric">
+          <div class="label">현재 막다른 길 비율 (완성 시 의미 확정)</div>
+          <div id="mDeadEnds" class="value">0개 (0.0%)</div>
+        </div>
+      </div>
+
+      <div class="metric" style="margin-bottom:14px;">
+        <div class="label" style="margin-bottom:4px;">현재 활성 호출 스택 (아래 → 위 순서, 최대 25개 표시)</div>
+        <div id="stackTrace" class="stack-view">[비어 있음]</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="box-pro">
+          <h3>장점 (Pros)</h3>
+          <ul>
+            <li><strong>긴 회랑과 높은 몰입감:</strong> 한 방향으로 길게 뻗어 탐험 경로가 길고 미로 풀이가 흥미롭습니다.</li>
+            <li><strong>구현이 단순함:</strong> 스택(또는 재귀)과 미방문 이웃 검사만으로 동작합니다.</li>
+            <li><strong>막다른 길 상대적 감소:</strong> 잘게 부서진 파편보다 길게 이어진 경로가 많습니다.</li>
+          </ul>
+        </div>
+        <div class="box-con">
+          <h3>단점 (Cons)</h3>
+          <ul>
+            <li><strong>스택 메모리 증가:</strong> 큰 미로에서는 스택 깊이가 커지며 재귀 시 스택 오버플로 위험이 있습니다.</li>
+            <li><strong>균등 확률 미보장:</strong> 모든 신장 트리를 동일 확률로 뽑는 알고리즘은 아닙니다.</li>
+            <li><strong>되돌아감 피로도:</strong> 긴 외길을 잘못 진입했을 때 되돌아오는 거리가 길 수 있습니다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="liveImpact" class="impact-note">
+        <strong>실시간 구조 영향:</strong> 현재 격자 크기에서는 최대 스택 깊이가 총 셀 수(<span id="totalCellsNote">225</span>)에 근접할 수 있습니다. 통로가 길게 이어질수록 "한 번 잘못 든 길에서 빠져나오는 거리"가 길어지는 특징이 나타납니다.
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("mazeCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const btnPlay = document.getElementById("btnPlay");
+    const btnStep = document.getElementById("btnStep");
+    const btnInstant = document.getElementById("btnInstant");
+    const btnReset = document.getElementById("btnReset");
+    const sizeRange = document.getElementById("sizeRange");
+    const speedRange = document.getElementById("speedRange");
+
+    const sizeVal = document.getElementById("sizeVal");
+    const speedVal = document.getElementById("speedVal");
+    const gridInfo = document.getElementById("gridInfo");
+    const phaseBadge = document.getElementById("phaseBadge");
+    const stepExplanation = document.getElementById("stepExplanation");
+    const mVisited = document.getElementById("mVisited");
+    const mProgressBar = document.getElementById("mProgressBar");
+    const mStack = document.getElementById("mStack");
+    const mBacktracks = document.getElementById("mBacktracks");
+    const mDeadEnds = document.getElementById("mDeadEnds");
+    const stackTrace = document.getElementById("stackTrace");
+    const totalCellsNote = document.getElementById("totalCellsNote");
+    const liveImpact = document.getElementById("liveImpact");
+
+    // walls: [top, right, bottom, left] -> true means wall exists
+    let rows = 15, cols = 15;
+    let grid = [];
+    let stack = [];
+    let visitedCount = 0;
+    let maxStackDepth = 0;
+    let backtrackCount = 0;
+    let isComplete = false;
+    let isPlaying = false;
+    let timerId = null;
+    let lastAction = "대기 중";
+
+    const dirs = [
+      { name: "북(위)", dr: -1, dc: 0, wCurrent: 0, wNext: 2 },
+      { name: "동(오른쪽)", dr: 0, dc: 1, wCurrent: 1, wNext: 3 },
+      { name: "남(아래)", dr: 1, dc: 0, wCurrent: 2, wNext: 0 },
+      { name: "서(왼쪽)", dr: 0, dc: 1 * -1, wCurrent: 3, wNext: 1 }
+    ];
+
+    function initMaze() {
+      stopPlay();
+      rows = parseInt(sizeRange.value, 10);
+      cols = rows;
+      grid = Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => ({
+          r, c,
+          visited: false,
+          walls: [true, true, true, true]
+        }))
+      );
+
+      const start = grid[0][0];
+      start.visited = true;
+      stack = [start];
+      visitedCount = 1;
+      maxStackDepth = 1;
+      backtrackCount = 0;
+      isComplete = false;
+      lastAction = `시작 셀 (${start.r}, ${start.c}) 방문 및 스택 Push`;
+
+      sizeVal.textContent = rows;
+      gridInfo.textContent = `${rows} × ${cols} 셀`;
+      totalCellsNote.textContent = rows * cols;
+      phaseBadge.textContent = "진행 준비 / 전진 가능";
+      stepExplanation.innerHTML = `<strong>[초기화]</strong> (${start.r}, ${start.c})에서 시작했습니다. 인접한 미방문 셀을 무작위로 선택해 벽을 허뭅니다.`;
+      render();
+    }
+
+    function getUnvisitedNeighbors(cell) {
+      const list = [];
+      for (const d of dirs) {
+        const nr = cell.r + d.dr;
+        const nc = cell.c + d.dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !grid[nr][nc].visited) {
+          list.push({ next: grid[nr][nc], dir: d });
+        }
+      }
+      return list;
+    }
+
+    function stepOnce() {
+      if (isComplete) return;
+
+      const current = stack[stack.length - 1];
+      const neighbors = getUnvisitedNeighbors(current);
+
+      if (neighbors.length > 0) {
+        const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
+        const next = chosen.next;
+
+        current.walls[chosen.dir.wCurrent] = false;
+        next.walls[chosen.dir.wNext] = false;
+        next.visited = true;
+        stack.push(next);
+        visitedCount += 1;
+        if (stack.length > maxStackDepth) maxStackDepth = stack.length;
+
+        phaseBadge.textContent = "전진(Carving)";
+        lastAction = `(${current.r},${current.c}) → (${next.r},${next.c}) [${chosen.dir.name}] 통로 개통`;
+        stepExplanation.innerHTML = `<strong>[전진 · Carve]</strong> (${current.r}, ${current.c})에서 ${chosen.dir.name} 방향의 (${next.r}, ${next.c})로 이동하며 벽을 허물고 스택에 쌓았습니다. (선택지 ${neighbors.length}개 중 1개 선택)`;
+      } else {
+        const popped = stack.pop();
+        backtrackCount += 1;
+        phaseBadge.textContent = "역추적(Backtracking)";
+        lastAction = `(${popped.r},${popped.c}) 막힘 → 역추적 Pop`;
+        stepExplanation.innerHTML = `<strong>[역추적 · Backtrack]</strong> (${popped.r}, ${popped.c}) 주변에 갈 수 있는 미방문 셀이 없어 스택에서 빼내고 이전 셀로 되돌아갑니다.`;
+      }
+
+      if (stack.length === 0) {
+        isComplete = true;
+        stopPlay();
+        phaseBadge.textContent = "완성(Complete)";
+        stepExplanation.innerHTML = `<strong>[미로 완성]</strong> 모든 셀(${rows * cols}개)을 방문하고 스택이 비었습니다. 길게 이어진 회랑과 분기 구조를 확인해 보세요.`;
+      }
+
+      render();
+    }
+
+    function generateInstant() {
+      while (!isComplete) {
+        stepOnce();
+      }
+    }
+
+    function countDeadEnds() {
+      let deadEnds = 0;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const openWalls = grid[r][c].walls.filter(w => !w).length;
+          if (openWalls === 1) deadEnds += 1;
+        }
+      }
+      return deadEnds;
+    }
+
+    function render() {
+      const size = canvas.width;
+      const cellSize = size / cols;
+      ctx.clearRect(0, 0, size, size);
+
+      const stackSet = new Set(stack.map(cell => `${cell.r},${cell.c}`));
+      const headCell = stack[stack.length - 1];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = grid[r][c];
+          const x = c * cellSize;
+          const y = r * cellSize;
+
+          if (!cell.visited) {
+            ctx.fillStyle = "#1e293b";
+          } else if (headCell && headCell.r === r && headCell.c === c && !isComplete) {
+            ctx.fillStyle = "#ef4444";
+          } else if (stackSet.has(`${r},${c}`) && !isComplete) {
+            ctx.fillStyle = "#38bdf866";
+          } else {
+            ctx.fillStyle = "#e2e8f0";
+          }
+          ctx.fillRect(x, y, cellSize, cellSize);
+
+          ctx.strokeStyle = "#0f172a";
+          ctx.lineWidth = Math.max(1.5, cellSize * 0.08);
+          ctx.beginPath();
+          if (cell.walls[0]) { ctx.moveTo(x, y); ctx.lineTo(x + cellSize, y); }
+          if (cell.walls[1]) { ctx.moveTo(x + cellSize, y); ctx.lineTo(x + cellSize, y + cellSize); }
+          if (cell.walls[2]) { ctx.moveTo(x, y + cellSize); ctx.lineTo(x + cellSize, y + cellSize); }
+          if (cell.walls[3]) { ctx.moveTo(x, y); ctx.lineTo(x, y + cellSize); }
+          ctx.stroke();
+        }
+      }
+
+      const total = rows * cols;
+      const pct = ((visitedCount / total) * 100).toFixed(1);
+      const deadEnds = countDeadEnds();
+      const deadEndPct = ((deadEnds / total) * 100).toFixed(1);
+
+      mVisited.textContent = `${visitedCount} / ${total} (${pct}%)`;
+      mProgressBar.style.width = `${pct}%`;
+      mStack.textContent = `${stack.length} / 최대 ${maxStackDepth}`;
+      mBacktracks.textContent = `${backtrackCount}회`;
+      mDeadEnds.textContent = `${deadEnds}개 (${deadEndPct}%)`;
+
+      if (stack.length === 0) {
+        stackTrace.textContent = "[비어 있음 — 모든 역추적 완료]";
+      } else {
+        const sliced = stack.slice(-25).map(s => `(${s.r},${s.c})`);
+        stackTrace.textContent = (stack.length > 25 ? "... → " : "") + sliced.join(" → ");
+      }
+
+      const ratio = (maxStackDepth / total * 100).toFixed(0);
+      liveImpact.innerHTML = `<strong>실시간 구조 영향:</strong> 지금까지 기록된 최대 스택 깊이는 <strong>${maxStackDepth}</strong>(전체 셀의 ${ratio}%)이며, 역추적은 <strong>${backtrackCount}회</strong> 발생했습니다. ${
+        isComplete
+          ? `완성된 미로의 막다른 길 비율은 <strong>${deadEndPct}%</strong>로, 길게 이어진 주 통로와 가지가 결합된 형태입니다.`
+          : `현재 동작: <code>${lastAction}</code>`
+      }`;
+    }
+
+    function startPlay() {
+      if (isComplete) initMaze();
+      isPlaying = true;
+      btnPlay.textContent = "일시 정지";
+      scheduleTick();
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      btnPlay.textContent = "자동 재생";
+      if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+      }
+    }
+
+    function scheduleTick() {
+      if (!isPlaying || isComplete) return;
+      const speed = parseInt(speedRange.value, 10);
+      const delay = Math.max(8, Math.round(260 - speed * 2.4));
+      timerId = setTimeout(() => {
+        stepOnce();
+        scheduleTick();
+      }, delay);
+    }
+
+    btnPlay.addEventListener("click", () => {
+      if (isPlaying) stopPlay();
+      else startPlay();
+    });
+
+    btnStep.addEventListener("click", () => {
+      stopPlay();
+      stepOnce();
+    });
+
+    btnInstant.addEventListener("click", () => {
+      stopPlay();
+      generateInstant();
+    });
+
+    btnReset.addEventListener("click", initMaze);
+
+    sizeRange.addEventListener("input", () => {
+      sizeVal.textContent = sizeRange.value;
+      initMaze();
+    });
+
+    speedRange.addEventListener("input", () => {
+      speedVal.textContent = speedRange.value;
+    });
+
+    initMaze();
+  </script>
+</body>
+</html>

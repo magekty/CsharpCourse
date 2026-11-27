@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polymorphic Mining — OOP 채굴 시뮬레이션 게임</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131b33;
+      --panel-2: #192444;
+      --border: #283866;
+      --text: #e8eefc;
+      --muted: #93a4cc;
+      --accent: #4ea8ff;
+      --gold: #ffd166;
+      --green: #38d996;
+      --warn: #ff922b;
+      --purple: #b197fc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.92rem;
+    }
+
+    .hud-pill {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gold { color: var(--gold); font-weight: 700; }
+    .green { color: var(--green); font-weight: 700; }
+    .accent { color: var(--accent); font-weight: 700; }
+
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: #20305c;
+    }
+
+    button.primary {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+      font-weight: 600;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 14px;
+      padding: 14px;
+      flex: 1;
+      align-items: start;
+    }
+
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .canvas-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: #070b16;
+      border-radius: 8px;
+      border: 1px solid #1f2d52;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .pipeline-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 720px) {
+      .pipeline-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .pipe-step {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .pipe-step strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 3px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px 0;
+      font-size: 0.98rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+
+    .unit-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .unit-tab.active {
+      border-color: var(--gold);
+      background: #27345e;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .iface-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 8px 0 12px;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .badge.on {
+      background: rgba(56, 217, 150, 0.14);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .badge.off {
+      background: rgba(147, 164, 204, 0.08);
+      border-color: #364675;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.84rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-box {
+      background: var(--panel-2);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #22315c;
+    }
+
+    .stat-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .upgrade-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .upgrade-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--panel-2);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+
+    .log-box {
+      max-height: 210px;
+      overflow-y: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      background: #080d1a;
+      border: 1px solid #1e2c50;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .log-entry {
+      margin-bottom: 4px;
+      padding-bottom: 3px;
+      border-bottom: 1px dashed #17223f;
+    }
+
+    .log-time { color: var(--muted); }
+    .help-text {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⛏️ Polymorphic Mining <span style="font-size:0.78rem;color:var(--muted);font-weight:400;">MiningUnit &amp; 5 Interfaces</span></h1>
+    <div class="hud-stats">
+      <div class="hud-pill">💰 자금: <span id="hudGold" class="gold">120 G</span></div>
+      <div class="hud-pill">🪨 발견 광맥: <span id="hudVeins" class="accent">0</span></div>
+      <div class="hud-pill">📦 정산 누적: <span id="hudSettled" class="green">0</span></div>
+      <div class="hud-pill">⏱️ 시간: <span id="hudTime">0.0s</span></div>
+    </div>
+    <div class="controls-bar">
+      <button id="btnTogglePause" class="primary">일시정지 (Space)</button>
+      <button id="btnAutoLoop">자동 루프: ON (A)</button>
+      <button id="btnSpawnVein">+ 신규 광맥 생성</button>
+      <button id="btnReset">게임 초기화</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="canvas-card">
+      <canvas id="gameCanvas" width="960" height="540"></canvas>
+      <div class="pipeline-strip">
+        <div class="pipe-step">
+          <strong>1. IProspectable</strong>
+          광맥 위치를 탐지하고 공유 맵에 브로드캐스트
+        </div>
+        <div class="pipe-step">
+          <strong>2. IExcavator</strong>
+          공유된 광맥을 채굴해 광석 채취
+        </div>
+        <div class="pipe-step">
+          <strong>3. ICargoHold</strong>
+          채굴량을 화물칸에 적재 및 용량 관리
+        </div>
+        <div class="pipe-step">
+          <strong>4. IMarket</strong>
+          마켓 거점에서 적재량을 골드로 정산
+        </div>
+        <div class="pipe-step">
+          <strong>5. IUpgradable</strong>
+          벌어들인 골드로 능력치 단계 강화
+        </div>
+      </div>
+      <div class="help-text">
+        <strong>조작법:</strong> [1~3] 유닛 선택 · [클릭] 선택 유닛 이동 명령(광맥 클릭 시 스캔/채굴 우선) · [WASD / 방향키] 수동 이동 · [Space] 일시정지 · [A] 자동 파이프라인 토글.
+        마켓(좌측 상단 초록/금색 정거장)에 화물을 적재한 유닛이 도달하면 <code>IMarket.settleCargo()</code>가 실행되어 골드로 정산됩니다.
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="card">
+        <h2>유닛 인스펙터 (다형성 위임 확인)</h2>
+        <div class="unit-tabs" id="unitTabs"></div>
+        <div id="unitHeader" style="font-weight:700;font-size:0.95rem;"></div>
+        <div id="unitRoleDesc" class="help-text" style="margin-top:3px;"></div>
+        <div class="iface-badges" id="ifaceBadges"></div>
+        <div class="stat-grid" id="unitStats"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button id="btnCmdScan">탐지 실행</button>
+          <button id="btnCmdMine">근처 광맥 채굴</button>
+          <button id="btnCmdMarket">마켓 복귀 정산</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>IUpgradable 능력치 강화</h2>
+        <div id="upgradeOwnerInfo" class="help-text" style="margin-bottom:8px;"></div>
+        <div class="upgrade-list" id="upgradeList"></div>
+      </div>
+
+      <div class="card">
+        <h2>다형성 호출 로그</h2>
+        <div class="log-box" id="logBox"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    /**
+     * =========================================================================
+     * 1. 인터페이스 규약 정의 (JavaScript/TypeScript 스타일의 구조적/메서드 규약)
+     *    - IProspectable : 광맥 위치 탐지 및 공유
+     *    - IExcavator    : 광맥 채굴
+     *    - ICargoHold    : 적재량 보관/조회/하역
+     *    - IMarket       : 적재량을 돈(Gold)으로 정산
+     *    - IUpgradable   : 벌어들인 돈으로 능력치 강화
+     * =========================================================================
+     */
+
+    // 각 인터페이스의 필수 메서드 목록(런타임 검증 및 다형성 조회용)
+    const INTERFACE_SPECS = {
+      IProspectable: ["scanVeins", "shareVein"],
+      IExcavator: ["excavate"],
+      ICargoHold: ["storeCargo", "unloadCargo", "getCargoAmount", "getCargoCapacity"],
+      IMarket: ["settleCargo"],
+      IUpgradable: ["getUpgradeCost", "upgradeStat"]
+    };
+
+    function implementsInterface(obj, ifaceName) {
+      const methods = INTERFACE_SPECS[ifaceName];
+      if (!obj || !methods) return false;
+      return methods.every((fn) => typeof obj[fn] === "function");
+    }
+
+    /**
+     * 추상 클래스: MiningUnit
+     * - 광물 채집해서 돈을 버는 게임의 공통된 규칙만 정의
+     * - 직접 인스턴스화 금지 (new MiningUnit() 시 에러)
+     * - 하위 클래스는 update(dt, world)와 render(ctx)를 구현해야 함
+     * - 다형성 접근자(getProspectable, getExcavator, getCargoHold, getMarket, getUpgradable)
+     *   를 통해 해당 능력을 구현한 객체(자기 자신 또는 위임 대상)를 반환
+     */
+    class MiningUnit {
+      constructor({ id, name, x, y, speed = 110, color = "#4ea8ff", autoMode = true }) {
+        if (new.target === MiningUnit) {
+          throw new Error("추상 클래스 MiningUnit은 직접 인스턴스화할 수 없습니다.");
+        }
+        this.id = id;
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.color = color;
+        this.autoMode = autoMode;
+        this.target = null; // { x, y, label }
+        this.statusText = "대기 중";
+        this.actionCooldown = 0;
+      }
+
+      // 다형적 인터페이스 조회 메서드 (기본값: null)
+      getProspectable() {
+        return implementsInterface(this, "IProspectable") ? this : null;
+      }
+      getExcavator() {
+        return implementsInterface(this, "IExcavator") ? this : null;
+      }
+      getCargoHold() {
+        return implementsInterface(this, "ICargoHold") ? this : null;
+      }
+      getMarket() {
+        return implementsInterface(this, "IMarket") ? this : null;
+      }
+      getUpgradable() {
+        return implementsInterface(this, "IUpgradable") ? this : null;
+      }
+
+      // 공통 이동 규칙
+      moveToward(tx, ty, dt, arrivalRadius = 8) {
+        const dx = tx - this.x;
+        const dy = ty - this.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist <= arrivalRadius) return true;
+        const step = Math.min(dist, this.speed * dt);
+        this.x += (dx / dist) * step;
+        this.y += (dy / dist) * step;
+        return false;
+      }
+
+      // 공통 프레임 갱신 규칙 (하위 클래스에서 확장)
+      update(dt, world) {
+        if (this.actionCooldown > 0) {
+          this.actionCooldown = Math.max(0, this.actionCooldown - dt);
+        }
+      }
+
+      // 공통 렌더링 규칙 (하위 클래스에서 확장)
+      render(ctx, isSelected) {
+        throw new Error("하위 클래스에서 render(ctx, isSelected)를 구현해야 합니다.");
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 2. 구체적 유닛 클래스들 (다형성 구현체)
+     * =========================================================================
+     */
+
+    /**
+     * ScoutDrone: IProspectable + IUpgradable 구현
+     * - 광맥 위치를 탐지·공유하는 정찰 유닛
+     * - 직접 채굴/적재는 하지 않지만 탐지 능력을 강화할 수 있음
+     */
+    class ScoutDrone extends MiningUnit {
+      constructor(opts) {
+        super({ ...opts, speed: opts.speed ?? 145, color: "#38d996" });
+        this.scanRadius = opts.scanRadius ?? 135;
+        this.levels = { scanRadius: 1, speed: 1 };
+      }
+
+      // IProspectable 구현
+      scanVeins(world) {
+        const newlyFound = [];
+        for (const vein of world.veins) {
+          if (vein.amount <= 0) continue;
+          const d = Math.hypot(vein.x - this.x, vein.y - this.y);
+          if (d <= this.scanRadius && !vein.discovered) {
+            vein.discovered = true;
+            newlyFound.push(vein);
+            this.shareVein(vein, world);
+          }
+        }
+        return newlyFound;
+      }
+
+      shareVein(vein, world) {
+        if (!world.sharedVeins.some((v) => v.id === vein.id)) {
+          world.sharedVeins.push(vein);
+          world.addLog(`[IProspectable] ${this.name} → 광맥 #${vein.id} (${vein.type}, 잔량 ${vein.amount}) 위치 공유!`);
+        }
+      }
+
+      // IUpgradable 구현
+      getUpgradeCost(statKey) {
+        const lv = this.levels[statKey] ?? 1;
+        return lv * 45;
+      }
+
+      upgradeStat(statKey, world) {
+        const cost = this.getUpgradeCost(statKey);
+        if (world.gold < cost) return false;
+        world.gold -= cost;
+        this.levels[statKey] = (this.levels[statKey] ?? 1) + 1;
+        if (statKey === "scanRadius") this.scanRadius += 35;
+        if (statKey === "speed") this.speed += 22;
+        world.addLog(`[IUpgradable] ${this.name} '${statKey}' Lv.${this.levels[statKey]} 강화 (-${cost}G)`);
+        return true;
+      }
+
+      update(dt, world) {
+        super.update(dt, world);
+        // 상시 주변 스캔
+        this.scanVeins(world);
+
+        // 수동 목표가 있으면 우선 이동
+        if (this.target) {
+          this.statusText = `지정 좌표 이동 (${this.target.label})`;
+          const arrived = this.moveToward(this.target.x, this.target.y, dt);
+          if (arrived) {
+            this.scanVeins(world);
+            this.target = null;
+          }
+          return;
+        }
+
+        if (!this.autoMode) {
+          this.statusText = "수동 대기 (클릭 또는 WASD로 이동)";
+          return;
+        }
+
+        // 미탐사 광맥이 있으면 접근해 스캔, 없으면 정찰 순회
+        const unknownVein = world.veins.find((v) => v.amount > 0 && !v.discovered);
+        if (unknownVein) {
+          this.statusText = `미탐사 광맥 #${unknownVein.id} 접근 중`;
+          this.moveToward(unknownVein.x, unknownVein.y, dt, this.scanRadius * 0.65);
+        } else {
+          this.statusText = "구역 정찰 순회 중";
+          const angle = world.elapsed * 0.55;
+          const px = 540 + Math.cos(angle) * 240;
+          const py = 280 + Math.sin(angle * 1.4) * 145;
+          this.moveToward(px, py, dt, 12);
+        }
+      }
+
+      render(ctx, isSelected) {
+        // 탐사 반경 표시
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.scanRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(56, 217, 150, 0.06)";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(56, 217, 150, 0.28)";
+        ctx.stroke();
+
+        // 드론 본체 (다이아몬드)
+        ctx.translate(this.x, this.y);
+        if (isSelected) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 20, 0, Math.PI * 2);
+          ctx.strokeStyle = "#ffd166";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.moveTo(0, -12);
+        ctx.lineTo(12, 0);
+        ctx.lineTo(0, 12);
+        ctx.lineTo(-12, 0);
+        ctx.closePath();
+        ctx.fillStyle = this.color;
+        ctx.fill();
+
+        ctx.fillStyle = "#e8eefc";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(this.name, 0, -18);
+        ctx.restore();
+      }
+    }
+
+    /**
+     * DrillHauler: IExcavator + ICargoHold + IUpgradable 구현
+     * - 공유된 광맥을 채굴해 화물칸에 적재하고, 화물칸이 차면 Market 거점으로 이동
+     */
+    class DrillHauler extends MiningUnit {
+      constructor(opts) {
+        super({ ...opts, speed: opts.speed ?? 95, color: "#4ea8ff" });
+        this.cargo = 0;
+        this.cargoCapacity = opts.cargoCapacity ?? 30;
+        this.minePower = opts.minePower ?? 12; // 초당 채굴량
+        this.levels = { minePower: 1, cargoCapacity: 1, speed: 1 };
+        this.activeVeinId = null;
+      }
+
+      // IExcavator 구현
+      excavate(vein, dt, world) {
+        if (!vein || vein.amount <= 0) return 0;
+        const hold = this.getCargoHold();
+        const freeSpace = hold ? hold.getCargoCapacity() - hold.getCargoAmount() : Infinity;
+        if (freeSpace <= 0) return 0;
+
+        const mined = Math.min(vein.amount, freeSpace, this.minePower * dt);
+        vein.amount = Math.max(0, +(vein.amount - mined).toFixed(2));
+        if (hold) {
+          hold.storeCargo(mined, vein.unitValue, world);
+        }
+        return mined;
+      }
+
+      // ICargoHold 구현
+      getCargoAmount() {
+        return this.cargo;
+      }
+      getCargoCapacity() {
+        return this.cargoCapacity;
+      }
+      storeCargo(amount, unitValue, world) {
+        this.cargo = +(this.cargo + amount).toFixed(2);
+        // 평균 단가 가중치 기록
+        this.pendingValue = (this.pendingValue ?? 0) + amount * unitValue;
+      }
+      unloadCargo() {
+        const unloaded = {
+          amount: this.cargo,
+          estimatedGold: Math.round(this.pendingValue ?? this.cargo * 4)
+        };
+        this.cargo = 0;
+        this.pendingValue = 0;
+        return unloaded;
+      }
+
+      // IUpgradable 구현
+      getUpgradeCost(statKey) {
+        const lv = this.levels[statKey] ?? 1;
+        return lv * 50;
+      }
+      upgradeStat(statKey, world) {
+        const cost = this.getUpgradeCost(statKey);
+        if (world.gold < cost) return false;
+        world.gold -= cost;
+        this.levels[statKey] = (this.levels[statKey] ?? 1) + 1;
+        if (statKey === "minePower") this.minePower += 6;
+        if (statKey === "cargoCapacity") this.cargoCapacity += 15;
+        if (statKey === "speed") this.speed += 18;
+        world.addLog(`[IUpgradable] ${this.name} '${statKey}' Lv.${this.levels[statKey]} 강화 (-${cost}G)`);
+        return true;
+      }
+
+      findBestSharedVein(world) {
+        const available = world.sharedVeins.filter((v) => v.amount > 0);
+        if (available.length === 0) return null;
+        available.sort((a, b) => {
+          const scoreA = a.unitValue * 10 - Math.hypot(a.x - this.x, a.y - this.y) * 0.08;
+          const scoreB = b.unitValue * 10 - Math.hypot(b.x - this.x, b.y - this.y) * 0.08;
+          return scoreB - scoreA;
+        });
+        return available[0];
+      }
+
+      update(dt, world) {
+        super.update(dt, world);
+
+        if (this.target) {
+          this.statusText = `지정 이동 (${this.target.label})`;
+          if (this.moveToward(this.target.x, this.target.y, dt)) {
+            this.target = null;
+          }
+          return;
+        }
+
+        if (!this.autoMode) {
+          this.statusText = "수동 대기";
+          return;
+        }
+
+        // 화물칸이 85% 이상 찼거나 채굴할 광맥이 없으면 마켓으로 이동
+        const isFullEnough = this.cargo >= this.cargoCapacity * 0.85;
+        const vein = isFullEnough ? null : this.findBestSharedVein(world);
+
+        if (isFullEnough || (!vein && this.cargo > 0)) {
+          this.statusText = `마켓 정산 이동 (${this.cargo.toFixed(0)}/${this.cargoCapacity})`;
+          const reached = this.moveToward(world.market.x, world.market.y, dt, 34);
+          if (reached && world.market.getMarket()) {
+            world.market.getMarket().settleCargo(this, world);
+          }
+          return;
+        }
+
+        if (vein) {
+          this.activeVeinId = vein.id;
+          const dist = Math.hypot(vein.x - this.x, vein.y - this.y);
+          if (dist > 22) {
+            this.statusText = `공유 광맥 #${vein.id} 이동 중`;
+            this.moveToward(vein.x, vein.y, dt, 18);
+          } else {
+            this.statusText = `광맥 #${vein.id} 채굴 및 적재 중`;
+            this.excavate(vein, dt, world);
+            world.activeLinks.push({
+              fromX: vein.x,
+              fromY: vein.y,
+              toX: this.x,
+              toY: this.y,
+              color: "#4ea8ff"
+            });
+          }
+        } else {
+          this.statusText = "공유 광맥 대기 중 (IProspectable)";
+          this.moveToward(250, 260, dt, 20);
+        }
+      }
+
+      render(ctx, isSelected) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (isSelected) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 22, 0, Math.PI * 2);
+          ctx.strokeStyle = "#ffd166";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // 본체 (사각형 채굴기)
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-13, -11, 26, 22);
+
+        // 적재량 게이지 바
+        const ratio = Math.min(1, this.cargo / this.cargoCapacity);
+        ctx.fillStyle = "#0b1020";
+        ctx.fillRect(-12, 14, 24, 5);
+        ctx.fillStyle = ratio > 0.8 ? "#ffd166" : "#38d996";
+        ctx.fillRect(-12, 14, 24 * ratio, 5);
+
+        ctx.fillStyle = "#e8eefc";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`${this.name} [${this.cargo.toFixed(0)}/${this.cargoCapacity}]`, 0, -17);
+        ctx.restore();
+      }
+    }
+
+    /**
+     * OmniRig: IProspectable + IExcavator + ICargoHold + IUpgradable 모두 구현
+     * - 다섯 가지 중 네 가지 인터페이스를 한 유닛에 결합한 다목적 하이브리드 리그
+     */
+    class OmniRig extends DrillHauler {
+      constructor(opts) {
+        super({ ...opts, speed: opts.speed ?? 112, color: "#b197fc", cargoCapacity: 40, minePower: 14 });
+        this.scanRadius = opts.scanRadius ?? 110;
+        this.levels = { minePower: 1, cargoCapacity: 1, scanRadius: 1, speed: 1 };
+      }
+
+      scanVeins(world) {
+        for (const vein of world.veins) {
+          if (vein.amount <= 0 || vein.discovered) continue;
+          if (Math.hypot(vein.x - this.x, vein.y - this.y) <= this.scanRadius) {
+            vein.discovered = true;
+            this.shareVein(vein, world);
+          }
+        }
+      }
+
+      shareVein(vein, world) {
+        if (!world.sharedVeins.some((v) => v.id === vein.id)) {
+          world.sharedVeins.push(vein);
+          world.addLog(`[IProspectable] ${this.name} → 광맥 #${vein.id} 위치 공유`);
+        }
+      }
+
+      getUpgradeCost(statKey) {
+        const lv = this.levels[statKey] ?? 1;
+        return lv * 55;
+      }
+
+      upgradeStat(statKey, world) {
+        const cost = this.getUpgradeCost(statKey);
+        if (world.gold < cost) return false;
+        world.gold -= cost;
+        this.levels[statKey] = (this.levels[statKey] ?? 1) + 1;
+        if (statKey === "minePower") this.minePower += 7;
+        if (statKey === "cargoCapacity") this.cargoCapacity += 18;
+        if (statKey === "scanRadius") this.scanRadius += 28;
+        if (statKey === "speed") this.speed += 20;
+        world.addLog(`[IUpgradable] ${this.name} '${statKey}' Lv.${this.levels[statKey]} 강화 (-${cost}G)`);
+        return true;
+      }
+
+      update(dt, world) {
+        this.scanVeins(world);
+        super.update(dt, world);
+      }
+
+      render(ctx, isSelected) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.scanRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(177, 151, 252, 0.22)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.translate(this.x, this.y);
+        if (isSelected) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 22, 0, Math.PI * 2);
+          ctx.strokeStyle = "#ffd166";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, 13, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+
+        const ratio = Math.min(1, this.cargo / this.cargoCapacity);
+        ctx.fillStyle = "#0b1020";
+        ctx.fillRect(-12, 16, 24, 5);
+        ctx.fillStyle = "#ffd166";
+        ctx.fillRect(-12, 16, 24 * ratio, 5);
+
+        ctx.fillStyle = "#e8eefc";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`${this.name} [${this.cargo.toFixed(0)}/${this.cargoCapacity}]`, 0, -18);
+        ctx.restore();
+      }
+    }
+
+    /**
+     * MarketStation: IMarket 구현 거점
+     * - ICargoHold를 가진 유닛의 적재량을 돈(Gold)으로 정산
+     */
+    class MarketStation {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.name = "중앙 정산 마켓";
+        this.marketBonus = 1.0;
+      }
+
+      // IMarket 구현
+      settleCargo(unit, world) {
+        const hold = unit.getCargoHold ? unit.getCargoHold() : null;
+        if (!hold || hold.getCargoAmount() <= 0) return 0;
+
+        const { amount, estimatedGold } = hold.unloadCargo();
+        const payout = Math.max(1, Math.round(estimatedGold * this.marketBonus));
+        world.gold += payout;
+        world.settledCount += Math.round(amount);
+        world.addLog(`[IMarket] ${this.name} ← ${unit.name} 적재량 ${amount.toFixed(1)} 정산 (+${payout}G)`);
+        world.activeLinks.push({
+          fromX: unit.x,
+          fromY: unit.y,
+          toX: this.x,
+          toY: this.y,
+          color: "#ffd166"
+        });
+        return payout;
+      }
+
+      getMarket() {
+        return this;
+      }
+
+      render(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = "rgba(255, 209, 102, 0.12)";
+        ctx.beginPath();
+        ctx.arc(0, 0, 42, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffd166";
+        ctx.strokeStyle = "#131b33";
+        ctx.lineWidth = 2;
+        ctx.fillRect(-22, -22, 44, 44);
+        ctx.strokeRect(-22, -22, 44, 44);
+
+        ctx.fillStyle = "#0b1020";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("MARKET", 0, 4);
+
+        ctx.fillStyle = "#ffd166";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("정산 거점", 0, -28);
+        ctx.restore();
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 3. 게임 월드 & 루프 (입력, 갱신, 렌더링)
+     * =========================================================================
+     */
+    const ORE_TYPES = [
+      { type: "철광석", unitValue: 3.5, color: "#94a3b8" },
+      { type: "금광석", unitValue: 7.0, color: "#fbbf24" },
+      { type: "크리스탈", unitValue: 11.5, color: "#38bdf8" }
+    ];
+
+    class GameWorld {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.keys = new Set();
+        this.reset();
+      }
+
+      reset() {
+        this.gold = 120;
+        this.settledCount = 0;
+        this.elapsed = 0;
+        this.paused = false;
+        this.autoMode = true;
+        this.nextVeinId = 1;
+        this.veins = [];
+        this.sharedVeins = [];
+        this.activeLinks = [];
+        this.logs = [];
+        this.market = new MarketStation(95, 95);
+
+        this.units = [
+          new ScoutDrone({ id: "u1", name: "탐사드론-01", x: 220, y: 140, autoMode: true }),
+          new DrillHauler({ id: "u2", name: "채굴기-02", x: 170, y: 210, autoMode: true }),
+          new OmniRig({ id: "u3", name: "옴니리그-03", x: 260, y: 240, autoMode: true })
+        ];
+        this.selectedUnitIndex = 0;
+
+        for (let i = 0; i < 6; i++) {
+          this.spawnVein();
+        }
+        this.addLog("시스템 초기화 완료: MiningUnit 다형성 파이프라인 가동");
+      }
+
+      spawnVein() {
+        const ore = ORE_TYPES[Math.floor(Math.random() * ORE_TYPES.length)];
+        const vein = {
+          id: this.nextVeinId++,
+          type: ore.type,
+          unitValue: ore.unitValue,
+          color: ore.color,
+          amount: Math.floor(45 + Math.random() * 55),
+          x: 240 + Math.random() * (this.canvas.width - 300),
+          y: 120 + Math.random() * (this.canvas.height - 170),
+          discovered: false
+        };
+        this.veins.push(vein);
+      }
+
+      addLog(msg) {
+        const timeStr = `${this.elapsed.toFixed(1)}s`;
+        this.logs.unshift({ timeStr, msg });
+        if (this.logs.length > 60) this.logs.pop();
+      }
+
+      getSelectedUnit() {
+        return this.units[this.selectedUnitIndex];
+      }
+
+      // [입력] 키보드/마우스 이벤트 처리
+      handleInput(dt) {
+        const unit = this.getSelectedUnit();
+        if (!unit) return;
+
+        let mx = 0;
+        let my = 0;
+        if (this.keys.has("KeyW") || this.keys.has("ArrowUp")) my -= 1;
+        if (this.keys.has("KeyS") || this.keys.has("ArrowDown")) my += 1;
+        if (this.keys.has("KeyA") || this.keys.has("ArrowLeft")) mx -= 1;
+        if (this.keys.has("KeyD") || this.keys.has("ArrowRight")) mx += 1;
+
+        if (mx !== 0 || my !== 0) {
+          unit.target = null;
+          const len = Math.hypot(mx, my);
+          unit.x = Math.max(20, Math.min(this.canvas.width - 20, unit.x + (mx / len) * unit.speed * dt));
+          unit.y = Math.max(20, Math.min(this.canvas.height - 20, unit.y + (my / len) * unit.speed * dt));
+          unit.statusText = "수동 조종 중";
+        }
+      }
+
+      handleCanvasClick(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const cx = (clientX - rect.left) * scaleX;
+        const cy = (clientY - rect.top) * scaleY;
+
+        // 유닛 클릭 시 선택 전환
+        const clickedUnitIdx = this.units.findIndex((u) => Math.hypot(u.x - cx, u.y - cy) <= 22);
+        if (clickedUnitIdx !== -1) {
+          this.selectedUnitIndex = clickedUnitIdx;
+          this.addLog(`[입력] ${this.units[clickedUnitIdx].name} 선택됨`);
+          return;
+        }
+
+        const unit = this.getSelectedUnit();
+        if (!unit) return;
+
+        // 광맥 근처 클릭 시 해당 광맥으로 이동 명령
+        const clickedVein = this.veins.find((v) => v.amount > 0 && Math.hypot(v.x - cx, v.y - cy) <= 26);
+        if (clickedVein) {
+          unit.target = { x: clickedVein.x, y: clickedVein.y, label: `광맥 #${clickedVein.id}` };
+          this.addLog(`[입력] ${unit.name} → 광맥 #${clickedVein.id} 이동 명령`);
+        } else {
+          unit.target = { x: cx, y: cy, label: `(${Math.round(cx)}, ${Math.round(cy)})` };
+          this.addLog(`[입력] ${unit.name} → 좌표 (${Math.round(cx)}, ${Math.round(cy)}) 이동`);
+        }
+      }
+
+      // [갱신] 월드 및 모든 MiningUnit 갱신
+      update(dt) {
+        this.handleInput(dt);
+        if (this.paused) return;
+
+        this.elapsed += dt;
+        this.activeLinks = [];
+
+        // 고갈된 광맥 정리 및 일정 주기 신규 광맥 생성
+        this.veins = this.veins.filter((v) => v.amount > 0);
+        this.sharedVeins = this.sharedVeins.filter((v) => v.amount > 0);
+        if (this.veins.filter((v) => v.amount > 0).length < 4 && Math.random() < dt * 0.6) {
+          this.spawnVein();
+        }
+
+        for (const unit of this.units) {
+          unit.autoMode = this.autoMode;
+          unit.update(dt, this);
+        }
+      }
+
+      // [렌더링] 배경, 광맥, 공유선, 마켓, 유닛 그리기
+      render() {
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // 그리드
+        ctx.strokeStyle = "rgba(78, 168, 255, 0.06)";
+        ctx.lineWidth = 1;
+        for (let x = 0; x < this.canvas.width; x += 48) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, this.canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y < this.canvas.height; y += 48) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(this.canvas.width, y);
+          ctx.stroke();
+        }
+
+        // 광맥 렌더링
+        for (const vein of this.veins) {
+          ctx.save();
+          ctx.translate(vein.x, vein.y);
+          const radius = 10 + Math.min(12, vein.amount * 0.14);
+          ctx.beginPath();
+          ctx.arc(0, 0, radius, 0, Math.PI * 2);
+          ctx.fillStyle = vein.discovered ? vein.color : "#26324d";
+          ctx.fill();
+          ctx.lineWidth = vein.discovered ? 2 : 1;
+          ctx.strokeStyle = vein.discovered ? "#ffffff" : "#475569";
+          ctx.stroke();
+
+          ctx.fillStyle = "#e8eefc";
+          ctx.font = "11px sans-serif";
+          ctx.textAlign = "center";
+          const label = vein.discovered
+            ? `#${vein.id} ${vein.type} (${vein.amount.toFixed(0)})`
+            : `#${vein.id} 미탐사 광맥`;
+          ctx.fillText(label, 0, -radius - 6);
+          ctx.restore();
+        }
+
+        // 활성 채굴/정산 파이프라인 빔 렌더링
+        for (const link of this.activeLinks) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(link.fromX, link.fromY);
+          ctx.lineTo(link.toX, link.toY);
+          ctx.strokeStyle = link.color;
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([6, 4]);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // 마켓 렌더링
+        this.market.render(ctx);
+
+        // 유닛 렌더링 및 이동 목표선
+        this.units.forEach((unit, idx) => {
+          if (unit.target) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(unit.x, unit.y);
+            ctx.lineTo(unit.target.x, unit.target.y);
+            ctx.strokeStyle = "rgba(255, 209, 102, 0.45)";
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.restore();
+          }
+          unit.render(ctx, idx === this.selectedUnitIndex);
+        });
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 4. UI 동기화 및 이벤트 바인딩
+     * =========================================================================
+     */
+    const canvas = document.getElementById("gameCanvas");
+    const world = new GameWorld(canvas);
+
+    function syncUI() {
+      document.getElementById("hudGold").textContent = `${world.gold} G`;
+      document.getElementById("hudVeins").textContent = `${world.sharedVeins.length} / ${world.veins.length}`;
+      document.getElementById("hudSettled").textContent = `${world.settledCount}`;
+      document.getElementById("hudTime").textContent = `${world.elapsed.toFixed(1)}s`;
+      document.getElementById("btnTogglePause").textContent = world.paused ? "재개 (Space)" : "일시정지 (Space)";
+      document.getElementById("btnAutoLoop").textContent = `자동 루프: ${world.autoMode ? "ON" : "OFF"} (A)`;
+
+      // 유닛 탭
+      const tabsEl = document.getElementById("unitTabs");
+      tabsEl.innerHTML = "";
+      world.units.forEach((u, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `unit-tab ${idx === world.selectedUnitIndex ? "active" : ""}`;
+        btn.textContent = `${idx + 1}. ${u.name.split("-")[0]}`;
+        btn.onclick = () => {
+          world.selectedUnitIndex = idx;
+          syncUI();
+        };
+        tabsEl.appendChild(btn);
+      });
+
+      const unit = world.getSelectedUnit();
+      if (unit) {
+        document.getElementById("unitHeader").textContent = `${unit.name} (${unit.constructor.name} extends MiningUnit)`;
+        document.getElementById("unitRoleDesc").textContent = `현재 상태: ${unit.statusText}`;
+
+        const ifaces = ["IProspectable", "IExcavator", "ICargoHold", "IMarket", "IUpgradable"];
+        const badgesEl = document.getElementById("ifaceBadges");
+        badgesEl.innerHTML = "";
+        ifaces.forEach((name) => {
+          const ok = implementsInterface(unit, name);
+          const span = document.createElement("span");
+          span.className = `badge ${ok ? "on" : "off"}`;
+          span.textContent = ok ? `✓ ${name}` : `✕ ${name}`;
+          badgesEl.appendChild(span);
+        });
+
+        const hold = unit.getCargoHold();
+        const cargoText = hold ? `${hold.getCargoAmount().toFixed(1)} / ${hold.getCargoCapacity()}` : "미지원";
+        const statsEl = document.getElementById("unitStats");
+        statsEl.innerHTML = `
+          <div class="stat-box"><span>이동 속도</span>${unit.speed} px/s</div>
+          <div class="stat-box"><span>화물 적재(ICargoHold)</span>${cargoText}</div>
+          <div class="stat-box"><span>탐지 반경</span>${unit.scanRadius ? unit.scanRadius + " px" : "-"}</div>
+          <div class="stat-box"><span>채굴력</span>${unit.minePower ? unit.minePower + "/s" : "-"}</div>
+        `;
+
+        // 버튼 활성 상태(다형성 위임 가능 여부)
+        document.getElementById("btnCmdScan").disabled = !unit.getProspectable();
+        document.getElementById("btnCmdMine").disabled = !unit.getExcavator();
+        document.getElementById("btnCmdMarket").disabled = !hold;
+
+        // IUpgradable 패널
+        const upg = unit.getUpgradable();
+        const upgOwnerEl = document.getElementById("upgradeOwnerInfo");
+        const upgListEl = document.getElementById("upgradeList");
+        upgListEl.innerHTML = "";
+
+        if (!upg) {
+          upgOwnerEl.textContent = "이 유닛은 IUpgradable을 구현하지 않았습니다.";
+        } else {
+          upgOwnerEl.textContent = `${unit.name} 능력치 강화 (보유 골드: ${world.gold}G)`;
+          const statLabels = {
+            minePower: "채굴 속도",
+            cargoCapacity: "화물 용량",
+            scanRadius: "탐지 반경",
+            speed: "이동 속도"
+          };
+          Object.keys(unit.levels).forEach((key) => {
+            const lv = unit.levels[key];
+            const cost = upg.getUpgradeCost(key);
+            const row = document.createElement("div");
+            row.className = "upgrade-row";
+            row.innerHTML = `<div><strong>${statLabels[key] ?? key}</strong> <span style="color:var(--muted);">Lv.${lv}</span></div>`;
+            const btn = document.createElement("button");
+            btn.textContent = `강화 (${cost}G)`;
+            btn.disabled = world.gold < cost;
+            btn.onclick = () => {
+              upg.upgradeStat(key, world);
+              syncUI();
+            };
+            row.appendChild(btn);
+            upgListEl.appendChild(row);
+          });
+        }
+      }
+
+      // 로그 렌더링
+      const logBox = document.getElementById("logBox");
+      logBox.innerHTML = world.logs
+        .map((entry) => `<div class="log-entry"><span class="log-time">[${entry.timeStr}]</span> ${entry.msg}</div>`)
+        .join("");
+    }
+
+    // 수동 명령 버튼
+    document.getElementById("btnCmdScan").onclick = () => {
+      const p = world.getSelectedUnit()?.getProspectable();
+      if (p) {
+        const found = p.scanVeins(world);
+        if (found.length === 0) world.addLog(`[IProspectable] ${world.getSelectedUnit().name} 스캔 완료 (신규 광맥 없음)`);
+        syncUI();
+      }
+    };
+
+    document.getElementById("btnCmdMine").onclick = () => {
+      const unit = world.getSelectedUnit();
+      if (!unit?.getExcavator()) return;
+      const vein = world.sharedVeins.find((v) => v.amount > 0);
+      if (vein) {
+        unit.target = { x: vein.x, y: vein.y, label: `광맥 #${vein.id}` };
+        world.addLog(`[IExcavator] ${unit.name} → 광맥 #${vein.id} 채굴 이동`);
+      }
+    };
+
+    document.getElementById("btnCmdMarket").onclick = () => {
+      const unit = world.getSelectedUnit();
+      if (!unit?.getCargoHold()) return;
+      unit.target = { x: world.market.x, y: world.market.y, label: "정산 마켓" };
+      world.addLog(`[IMarket] ${unit.name} → 정산 마켓 복귀 명령`);
+    };
+
+    document.getElementById("btnTogglePause").onclick = () => {
+      world.paused = !world.paused;
+      syncUI();
+    };
+
+    document.getElementById("btnAutoLoop").onclick = () => {
+      world.autoMode = !world.autoMode;
+      world.addLog(`[시스템] 자동 파이프라인 모드: ${world.autoMode ? "ON" : "OFF"}`);
+      syncUI();
+    };
+
+    document.getElementById("btnSpawnVein").onclick = () => {
+      world.spawnVein();
+      world.addLog("[월드] 신규 광맥이 생성되었습니다.");
+      syncUI();
+    };
+
+    document.getElementById("btnReset").onclick = () => {
+      world.reset();
+      syncUI();
+    };
+
+    canvas.addEventListener("click", (e) => {
+      world.handleCanvasClick(e.clientX, e.clientY);
+      syncUI();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+        e.preventDefault();
+      }
+      if (e.code === "Space") {
+        world.paused = !world.paused;
+      } else if (e.code === "KeyA" && !e.repeat) {
+        world.autoMode = !world.autoMode;
+      } else if (e.code === "Digit1") {
+        world.selectedUnitIndex = 0;
+      } else if (e.code === "Digit2") {
+        world.selectedUnitIndex = 1;
+      } else if (e.code === "Digit3") {
+        world.selectedUnitIndex = 2;
+      } else {
+        world.keys.add(e.code);
+      }
+      syncUI();
+    });
+
+    window.addEventListener("keyup", (e) => {
+      world.keys.delete(e.code);
+    });
+
+    // 메인 게임 루프
+    let lastTime = performance.now();
+    let uiTimer = 0;
+
+    function loop(now) {
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+
+      world.update(dt);
+      world.render();
+
+      uiTimer += dt;
+      if (uiTimer >= 0.15) {
+        uiTimer = 0;
+        syncUI();
+      }
+      requestAnimationFrame(loop);
+    }
+
+    syncUI();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
